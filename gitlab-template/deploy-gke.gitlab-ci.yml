@@ -1,0 +1,79 @@
+.deploy_cache:
+  cache:
+    key: build_cache
+    paths:
+      - ./publish
+    policy: pull
+
+.before_deploy_script_gke: &before_deploy_script_gke
+  - |
+    echo "EJECUTANDO DESPLIEGUE"
+
+.build_deploy_script_gke: &build_deploy_script_gke
+  - export DEPLOYS=$(helm ls  -n $NAMESPACE_GKE | grep $CI_PROJECT_NAME | wc -l)
+  - |
+    [[ -z "$CI_COMMIT_TAG" ]] && export DOCKER_TAG=$CI_COMMIT_SHORT_SHA || export DOCKER_TAG=$CI_COMMIT_TAG
+  - >
+    if [ $DEPLOYS = 0 ]; then
+      echo "INSTALAR"
+      echo "helm install $CI_PROJECT_NAME --set image.tag=$CI_COMMIT_SHORT_SHA --set imagePullSecrets[0].name=$REGISTRY_SECRET ./helm  -f ./helm/${STAGE}-values-gke.yaml -n $NAMESPACE_GKE --create-namespace"
+      helm install $CI_PROJECT_NAME --set image.tag=$CI_COMMIT_SHORT_SHA --set imagePullSecrets[0].name=$REGISTRY_SECRET ./helm  -f ./helm/${STAGE}-values-gke.yaml -n $NAMESPACE_GKE --create-namespace
+    else
+      echo "ACTUALIZAR CHART"
+      echo "helm upgrade --instal --set image.tag=$DOCKER_TAG --set imagePullSecrets.name=[$REGISTRY_SECRET] --force  $CI_PROJECT_NAME ./helm  -f ./helm/${STAGE}-values-gke.yaml -n $NAMESPACE_GKE"
+      helm upgrade --install --set image.tag=$DOCKER_TAG --set imagePullSecrets[0].name=$REGISTRY_SECRET --force  $CI_PROJECT_NAME ./helm  -f ./helm/${STAGE}-values-gke.yaml -n $NAMESPACE_GKE
+    fi
+
+.base_deploy_before_script_gke:
+  before_script: *before_deploy_script_gke
+
+.base_deploy_script_gke:
+  script: *build_deploy_script_gke
+
+.base_deploy_build_gke:
+  extends:
+    - .deploy_cache
+  stage: deploy
+  image: alpine/helm:3.12.1
+  timeout: 4h 0m
+  allow_failure: false
+
+
+deploy:helm:qa:gke:
+  extends:
+    - .base_deploy_build_gke
+    - .base_deploy_before_script_gke
+    - .base_deploy_script_gke
+  needs: ["build:docker:qa"] 
+  environment:
+    name: QA
+  when: manual
+  only:
+    changes:
+      - "src/API/**/*"
+    refs:
+      - branches
+    variables:
+      - $CI_COMMIT_REF_NAME == "develop"
+  tags:
+    - gcp-qa    
+
+deploy:helm:prod:gke:
+  extends:
+    - .base_deploy_build_gke
+    - .base_deploy_before_script_gke
+    - .base_deploy_script_gke
+  needs: ["build:docker:prod"] 
+  environment:
+    name: Prod
+  when: manual
+  only:
+    changes:
+      - "src/API/**/*"
+    refs:
+      - branches
+    variables:
+      - $CI_COMMIT_REF_NAME == "master"
+      - $CI_COMMIT_REF_NAME == "main"
+  tags:
+    - gcp-prod    

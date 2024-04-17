@@ -1,0 +1,216 @@
+# Default values for backend-portal-privado.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: confuturocloud/backend-portal-privado
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+configmap:
+  name: backend-portal-privado
+  data:
+    ASPNETCORE_ENVIRONMENT: "QA"
+    AllowedHosts: "*"
+    API_BASE_PATH: /backend-portal
+    KUBERNETES: "K8"
+    
+    Serilog__MinimalLevel__Default: Information
+    Serilog__MinimalLevel__Override__Microsoft: Information
+    Serilog__MinimalLevel__Override__System: Warning
+    Serilog__WriteTo__Name: Console
+    Serilog__WriteTo__Arg__formatter: Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact
+    
+    JwtConfig__ValidIssuer: https://api-qa.confuturo.cl
+    JwtConfig__ExpirationInMinutes: 1440
+    JwtConfig__Portability__ExpirationInMinutes: 1440
+    JwtConfig__Secret: c0nfutur0.acc0unt-s3rvic3.2022.-  #no quitar ya que este valor no hay caso que venga desde el secreto en QA
+    
+    Apis__UrlClients: http://api-clientes.qa.seguros.local/clientes/
+    #Apis__UrlProductos: http://api-productos.qa.seguros.local/productos/
+    Apis__UrlProductos: http://api.seguros.local/productos/ #prod
+    Apis__UrlLocalizacion: http://api.qa.seguros.local/localizacion/
+    Apis__DigitalMedia__Url: http://192.168.154.54:82/MediosDigitales/
+    Apis__DigitalMedia__User: usrWeb
+    Apis__UrlCOR: http://api.qa.seguros.local/cor/
+    Apis__UrlDOF: http://api.qa.seguros.local/source-funds-statement/
+    Apis__UrlEconomicIndicators: http://api.qa.seguros.local/ind-economicos/
+    Apis__UrlPensions: https://webapps.confuturo.cl/Certificados_API/
+    Apis__UrlTracking: http://api.qa.seguros.local/tracking/
+    Apis__CustomerAccountService__Url: https://api-qa.confuturo.cl/customer-account/
+    Apis__Recaptcha__Url: https://www.google.com/recaptcha/api/
+    Apis__PGU__Url: http://api.seguros.local/rentas-services/aps/
+    Apis__PGU__UrlForm: https://autorizacion-aps.confuturo.cl/potenciales/{taxid}/1
+    Apis__MethodPayment__Url: http://api.qa.seguros.local/change-payment-method/
+    Apis__FinancialPortability__UrlApi: http://192.168.154.54:8099/
+    Apis__FinancialPortability__UrlWeb: https://webapps.confuturo.cl/PortabilidadBackOffice_sp3/auth
+    Apis__Payment__UrlApi: https://api-qa.confuturo.cl/payment-service/
+    Apis__Payment__UrlRedirect: https://pagosweb-qa.confuturo.cl/
+    Apis__Payment__UrlRedirectPayment: https://clientes-qa.confuturo.cl/tools/payment-result
+    Apis__Notifications__Url: http://api-notificaciones.qa.seguros.local/notificaciones/
+    Apis__Notifications__From: confuturo@confuturo.cl
+    Apis__Notifications__EmailTest: hcofre@confuturo.cl,javilac@ext.confuturo.cl,ccorrea@confuturo.cl,jovallea@confuturo.cl,mrojas@ext.confuturo.cl,pgutierrezsa@ext.confuturo.cl,lmirandam@confuturo.cl
+    Apis__ProductLife__Url: http://backend-product-life.qa.seguros.local/
+    Apis__Investment__Url: http://api.qa.seguros.local/investment-services/
+    Apis__PensionLiquidation__Url: http://api.qa.seguros.local/pension-settlement/
+    Apis__Endorsement_Url: http://api.qa.seguros.local/endorsement-vi/
+    Apis__Keycloak__Url: https://auth.confuturo.cl/auth
+    Apis__Keycloak__Realm: confuturo-sso-qa
+    Apis__Keycloak__User: backend-portal-privado
+    Apis__RRHH__Url: http://api.qa.seguros.local/rrhh/v1/staff/
+    Apis__PdfServices__Url: https://pdf-service-42nqpimoca-uc.a.run.app/
+    Apis__Zendesk__Url: https://atencionconfuturo.zendesk.com/
+    Apis__Zendesk__testMode: true
+    Apis__Zendesk__Email: support@atencionconfuturo.zendesk.com
+    Apis__Zendesk__Ticket__Channel: Portal_clientes
+    
+    Ws__UrlWsError: http://testapps297.seguros.local:8078/ErrorWS/ErrorWS.svc
+    #Ws__UrlWsPensiones: http://webapps.confuturo.cl/ws_Pensiones/wsPensiones.asmx
+    Ws__UrlWsPensiones: http://webapps.confuturo.cl/ws_Pensiones/wsPensiones.asmx  #prod
+    Ws__UrlWsCartaSernac: http://192.168.154.51:86/ws_CartaSernac/wsCartasSernac.asmx
+    Ws__UrlWsVT: http://testapps297.seguros.local:8097/ServicesVT/ServicesVT.svc
+    
+    Contribution__UfMaxAmount: 2000
+    
+    Survey__days: 14
+    Survey__months: 4
+    Survey__hide: true
+
+    PAT__UrlLogo: https://storage.googleapis.com/bkt-cf-sitioprivado-cli/images/logotipo.png
+    PAT__Request__From: clientes@confuturo.cl
+    PAT__Request__EmailsTest: jramirezr@confuturo.cl,jovallea@confuturo.cl,mrojas@ext.confuturo.cl,ccorrea@confuturo.cl,pgutierrezsa@ext.confuturo.cl,lmirandam@confuturo.cl
+    PAT__Request__Emails: jramirezr@confuturo.cl
+    PAT__Request__EmailsBcc: jramirezr@confuturo.cl
+
+    UrlRedirectExecutiveView: https://clientes-qa.confuturo.cl/executive-view
+
+    Distribution__Request__Subject: Portal Privado – Cambio Modalidad Inversión
+    Distribution__Request__From: clientes@confuturo.cl
+    Distribution__Request__EmailsTest: jramirezr@confuturo.cl,jovallea@confuturo.cl,mrojas@ext.confuturo.cl,ccorrea@confuturo.cl,pgutierrezsa@ext.confuturo.cl,lmirandam@confuturo.cl
+    Distribution__Request__Emails: jramirezr@confuturo.cl
+    Distribution__Request__EmailsBcc: jramirezr@confuturo.cl
+
+    Transaction__Request__Subject-APORTE: Comprobante de Aporte en Línea
+    Transaction__Request__Subject-PAGO-PRIMA: Comprobante de Pago en Línea
+    Transaction__Request__From: confuturo@confuturo.cl
+    Transaction__Request__EmailsTest: cfuenzalida@confuturo.cl,aaudeb@confuturo.cl,rolivares@confuturo.cl,storrealba@ext.confuturo.cl 
+    Transaction__Request__EmailsBcc: jramirezr@confuturo.cl
+    
+    BankInformation__Request__Subject: Prueba - Confirmación de devolución de primas
+    BankInformation__Request__From: clientes@confuturo.cl
+    BankInformation__Request__EmailsTest: hcofre@confuturo.cl,jramirezr@confuturo.cl,ccorrea@confuturo.cl,jovallea@confuturo.cl,mrojas@ext.confuturo.cl,pgutierrezsa@ext.confuturo.cl,lmirandam@confuturo.cl
+    BankInformation__Request__EmailsBcc: respaldo.comunicaciones@confuturo.cl,ccorrea@confuturo.cl
+
+    Campaign__Request__Subject: Prueba - Confirmación de Campaña Súper Tasa 2,5%
+    Campaign__Request__From: clientes@confuturo.cl
+    Campaign__Request__EmailsTest: hcofre@confuturo.cl,jramirezr@confuturo.cl,ccorrea@confuturo.cl,jovallea@confuturo.cl,mrojas@ext.confuturo.cl,pgutierrezsa@ext.confuturo.cl,lmirandam@confuturo.cl
+    Campaign__Request__EmailsBcc: respaldo.comunicaciones@confuturo.cl,ccorrea@confuturo.cl
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations:
+  vault.hashicorp.com/agent-inject: "true"
+  vault.hashicorp.com/agent-inject-secret-data: backend-portal-privado-kv/data/qa
+  vault.hashicorp.com/agent-requests-cpu: "50m"
+  vault.hashicorp.com/agent-inject-template-data: |
+    {{- with secret "backend-portal-privado-kv/data/qa" -}}
+    export ConnectionStrings__PortalWebDB="{{ .Data.data.connectionstrings_portalwebdb }}"
+    export ConnectionStrings__PATDB="{{ .Data.data.connectionstrings_patdb }}"
+    export DigitalMedia__User="{{ .Data.data.digitalmedia_user }}"
+    export DigitalMedia__Password="{{ .Data.data.digitalmedia_password }}"
+    export JwtConfig__Portability__Secret="{{ .Data.data.jwtconfig_portability_secret }}"
+    export Apis__CustomerAccountService__ApiKey="{{ .Data.data.apis_customeraccountservice_apikey }}"
+    export Apis__Recaptcha__Secret="{{ .Data.data.apis_recaptcha_secret }}"
+    export Apis__PGU__ApiKey="{{ .Data.data.apis_pgu_apikey }}"
+    export Apis__Keycloak__SecretKey="{{ .Data.data.apis_keycloak_secretkey }}"
+    export Apis__Zendesk__Token="{{ .Data.data.apis_zendesk_token }}" 
+    {{- end -}}
+  vault.hashicorp.com/role: "qa"
+
+  #export JwtConfig__Secret="{{ .Data.data.jwtconfig_secret }}" este valor no hay caso que venga desde el secreto en QA se deja en duro en el configmap
+    
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: backend-portal.qa.seguros.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+    - host: backend-portal-qa.confuturo.cl
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+   requests:
+     cpu: 50m
+  #   memory: 128Mi
+
+gateways:
+  enabled: false
+
+virtualService:
+  enabled: false
+
+sidecarIstio:
+  enabled: false
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: 
+  env: qa
+
+tolerations: []
+
+affinity: {}

@@ -1,0 +1,22 @@
+{{- if .Values.virtualService.enabled -}}
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "backend-portal-privado.fullname" . }}
+spec:
+  hosts:
+  {{- range .Values.ingress.hosts }}
+  - {{ .host | quote }}
+  {{- end }}    
+  gateways:
+  - {{ include "backend-portal-privado.fullname" . }}
+  http:
+  - match:
+    - uri:
+        prefix: {{ index .Values.ingress.hosts 0 "paths" 0 "path" }}
+    route:
+    - destination:
+        port:
+          number: 80 # can be omitted if it's the only port for reviews
+        host: {{ include "backend-portal-privado.fullname" . }}
+{{- end }}

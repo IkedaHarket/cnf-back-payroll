@@ -1,0 +1,73 @@
+# MATIAS SALINAS - CONSULTOR CLOUD/DEVOPS
+.build_cache:
+  cache:
+    key: build_cache
+    paths:
+      - ./publish
+    policy: pull
+
+.before_docker_script: &before_docker_script
+  - | #DOCKER LOGIN
+    echo -n $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
+.build_docker_script: &build_docker_script
+  - |
+    [[ -z "$CI_COMMIT_TAG" ]] && export DOCKER_TAG=$CI_COMMIT_SHORT_SHA || export DOCKER_TAG=$CI_COMMIT_TAG
+  - echo "docker build ./src --network=host -f $DOCKERFILE -t confuturocloud/$CI_PROJECT_NAME:$DOCKER_TAG"
+  - docker build ./src --network=host -f $DOCKERFILE -t confuturocloud/$CI_PROJECT_NAME:$DOCKER_TAG
+  - docker push confuturocloud/$CI_PROJECT_NAME:$DOCKER_TAG 
+
+.base_docker_before_script:
+  before_script: *before_docker_script
+
+.base_docker_script:
+  script: *build_docker_script
+
+.base_docker_build:
+  extends:
+    - .build_cache
+  stage: build
+  image: docker:19.03.12
+  services:
+    - docker:19.03.12-dind
+  timeout: 4h 0m
+  variables:
+    DOCKER_DRIVER: overlay2
+  allow_failure: false
+
+#JOB BUILD DE DESPLIEGUE DE QA
+build:docker:qa:
+  extends:
+    - .base_docker_build
+    - .base_docker_before_script
+    - .base_docker_script
+  environment:
+    name: QA
+  only:
+    changes:
+      - "src/API/**/*"
+    refs:
+      - branches
+    variables:
+      - $CI_COMMIT_REF_NAME == "develop"
+  tags:
+    - gcp
+
+#JOB BUILD DE DESPLIEGUE DE PRODUCCION
+build:docker:prod:
+  extends:
+    - .base_docker_build
+    - .base_docker_before_script
+    - .base_docker_script
+  environment:
+    name: Prod
+  only:
+    changes:
+      - "src/API/**/*"
+    refs:
+      - branches
+    variables:
+      - $CI_COMMIT_REF_NAME == "master"
+      - $CI_COMMIT_REF_NAME == "main" 
+  tags:
+    - gcp

@@ -1,0 +1,8 @@
+include:
+  - local: "/gitlab-template/build.local.gitlab-ci.yml"
+  - local: "/gitlab-template/deploy-gke.gitlab-ci.yml"
+  - local: "/gitlab-template/deploy.gitlab-ci.yml"
+
+stages:
+  - build
+  - deploy

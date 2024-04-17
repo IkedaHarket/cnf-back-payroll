@@ -1,0 +1,18 @@
+{{- if .Values.gateways.enabled -}}
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: {{ include "backend-portal-privado.fullname" . }}
+spec:
+  selector:
+    istio: ingress
+  servers:
+  - hosts:
+    {{- range .Values.ingress.hosts }}
+    - {{ .host | quote }}
+    {{- end }}    
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+{{- end}}
