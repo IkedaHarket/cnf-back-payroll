@@ -3,6 +3,7 @@ using Backend.Payroll.API.Application.DTO.Response;
 using Backend.Payroll.API.Application.Interfaces;
 using Backend.Payroll.API.Application.Utils;
 using Backend.Payroll.API.Domain.Exceptions;
+using Backend.Payroll.API.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -51,7 +52,7 @@ namespace Backend.Payroll.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PayrollDocument))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(bool))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(bool))]
         public async Task<IActionResult> SendPayroll(IFormFile file)
@@ -65,7 +66,7 @@ namespace Backend.Payroll.API.Controllers
             try
             {
                 var response = await _payrollBusiness.SendPayroll(file);
-                return Ok();
+                return Ok(response);
             }
             catch (NotFoundException ex)
             {

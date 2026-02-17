@@ -19,7 +19,7 @@ namespace Backend.Payroll.API.Persistence.Repositories
         }
 
 
-        public async Task<bool> SaveFile(PayrollDocument payrollDocument)
+        public async Task<PayrollDocument> SaveFile(PayrollDocument payrollDocument)
         {
             using var db = new NpgsqlConnection(_payrollDb);
             db.Open();
@@ -27,6 +27,9 @@ namespace Backend.Payroll.API.Persistence.Repositories
 
             int year = DateTime.Now.Year;
             string internalCode = await GeneratePayrollCode(year, db, transaction);
+
+            payrollDocument.FileName = $"{internalCode}.txt";
+            payrollDocument.InternalCode = internalCode;
 
             string sql = @"INSERT INTO public.payroll 
                        (id, file, created_at, internal_code) 
@@ -43,7 +46,7 @@ namespace Backend.Payroll.API.Persistence.Repositories
 
             transaction.Commit();
 
-            return true;
+            return payrollDocument;
 
         }
 

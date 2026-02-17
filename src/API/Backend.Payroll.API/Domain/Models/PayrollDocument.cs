@@ -11,7 +11,7 @@ namespace Backend.Payroll.API.Domain.Models
         public int TemplateCode { get; set; }
         public long TotalAmount { get; set; }
         public int RecordCount { get; set; }
-        public string? PayrollName { get; set; }
+        public string InternalCode { get; set; }
         public long AgreementNumber { get; set; }
         public string FileName { get; set; }
     }
