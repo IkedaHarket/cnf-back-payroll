@@ -1,0 +1,15 @@
+﻿namespace Backend.Payroll.API.Infraestructure.Models.BancoEstado.Request
+{
+    public class GetSettlementRequest
+    {
+        public string? PayrollId { get; set; }
+
+        public string? PaymentDateFrom { get; set; }
+
+        public string? PaymentDateTo { get; set; }
+
+        public long AgreementNumber { get; set; }
+
+        public string AccessToken { get; set; }
+    }
+}

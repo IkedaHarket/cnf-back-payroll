@@ -3,9 +3,9 @@
 version: '3.4'
 
 services:
-  backend-ProyectName:
-    image: backend-ProyectName:qa
-    container_name: backend-ProyectName
+  backend-Payroll:
+    image: backend-Payroll:qa
+    container_name: backend-Payroll
     build:
       context: .
       dockerfile: Dockerfile
@@ -15,4 +15,4 @@ services:
       - ASPNETCORE_ENVIRONMENT=QA
       - Apis:UrlClientes=http://api-clientes.qa.seguros.local/clientes/
       - Apis:UrlProductos=http://api-productos.qa.seguros.local/productos/
-      - API_BASE_PATH=/backend-ProyectName
+      - API_BASE_PATH=/backend-Payroll

@@ -15,16 +15,16 @@ RUN apt-get update && apt-get install tzdata apt-utils libgdiplus libc6-dev -y
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0-focal AS build
 WORKDIR /src
-COPY ["./API/Backend.ProyectName.API/Backend.ProyectName.API.csproj", "./API/Backend.ProyectName.API/"]
-RUN dotnet restore "./API/Backend.ProyectName.API/Backend.ProyectName.API.csproj"
+COPY ["./API/Backend.Payroll.API/Backend.Payroll.API.csproj", "./API/Backend.Payroll.API/"]
+RUN dotnet restore "./API/Backend.Payroll.API/Backend.Payroll.API.csproj"
 COPY . .
-WORKDIR "/src/API/Backend.ProyectName.API/"
-RUN dotnet build "Backend.ProyectName.API.csproj" -c Release -o /app/build
+WORKDIR "/src/API/Backend.Payroll.API/"
+RUN dotnet build "Backend.Payroll.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Backend.ProyectName.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Backend.Payroll.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Backend.ProyectName.API.dll"]
+ENTRYPOINT ["dotnet", "Backend.Payroll.API.dll"]
