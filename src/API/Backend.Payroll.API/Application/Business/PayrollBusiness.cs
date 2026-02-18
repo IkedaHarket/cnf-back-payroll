@@ -11,6 +11,7 @@ using Backend.Payroll.API.Application.DTO.Request;
 using System.Collections.Generic;
 using Backend.Payroll.API.Application.DTO.Response;
 using Mapster;
+using Backend.Payroll.API.Domain.Exceptions;
 
 namespace Backend.Payroll.API.Application.Business
 {
@@ -61,16 +62,16 @@ namespace Backend.Payroll.API.Application.Business
                     CreatedAt = DateTime.UtcNow
                 };
 
-                var payrollDocument = await _bankPayrollService.SendPayroll(newDocument);
+                newDocument = await _bankPayrollService.SendPayroll(newDocument);
 
 
-                await _payrollRepository.SaveFile(payrollDocument);
+                newDocument = await _payrollRepository.SaveFile(newDocument);
 
-                return payrollDocument;
+                return newDocument;
             }
             catch (Exception ex)
             {
-                return null;
+                throw new BusinessException("Error al procesar el archivo", ex);
             }
         }
     }
