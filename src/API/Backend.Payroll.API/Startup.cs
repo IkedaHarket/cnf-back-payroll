@@ -17,6 +17,8 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Backend.Payroll.API
 {
@@ -42,7 +44,15 @@ namespace Backend.Payroll.API
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
-            services.AddControllers();
+            services.AddControllers( options =>
+            {
+                options.Filters.Add<Backend.Payroll.API.Application.Filters.ResponseWrapperFilter>();
+
+            }).AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            });
 
             //services.AddTokenAuthentication(Configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -100,6 +110,7 @@ namespace Backend.Payroll.API
             if (!string.IsNullOrWhiteSpace(pathBase)) app.UsePathBase($"/{pathBase.TrimStart('/')}");
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
+            app.UseMiddleware<Backend.Payroll.API.Application.Middleware.ExceptionMiddleware>();
             app.UseStaticFiles();
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint($"{pathBase}/swagger/v1/swagger.json", "Backend.Payroll.API v1"));

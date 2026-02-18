@@ -105,6 +105,7 @@
  	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Application\Extensions\" />
 	  <Folder Include="Application\Services\" />
 	  <Folder Include="Persistence\Model\" />
 	</ItemGroup>

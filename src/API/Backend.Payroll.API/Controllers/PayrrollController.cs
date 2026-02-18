@@ -19,31 +19,20 @@ namespace Backend.Payroll.API.Controllers
         IPayrollBusiness _payrollBusiness
         ): ControllerBase
     {
+
         /// <summary>
         /// Health Check
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [Route("health")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HealthCheckResponse))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(bool))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponse<HealthCheckResponse>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(BaseResponse<object>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BaseResponse<object>))]
         public async Task<IActionResult> HealthCheck()
         {
-
-            try
-            {
-                var response = await _payrollBusiness.HealthCheck();
-                return Ok(response);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (Exception ex)
-            {
-                return ErrorHandling(ex);
-            }
+            var response = await _payrollBusiness.HealthCheck();
+            return Ok(response);
         }
 
         /// <summary>
@@ -52,9 +41,9 @@ namespace Backend.Payroll.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PayrollDocument))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(bool))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponse<PayrollDocument>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(BaseResponse<object>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BaseResponse<object>))]
         public async Task<IActionResult> SendPayroll(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -63,19 +52,8 @@ namespace Backend.Payroll.API.Controllers
             if (Path.GetExtension(file.FileName).ToLower() != ".txt")
                 return BadRequest("Solo se permiten archivos .txt");
 
-            try
-            {
-                var response = await _payrollBusiness.SendPayroll(file);
-                return Ok(response);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (Exception ex)
-            {
-                return ErrorHandling(ex);
-            }
+            var response = await _payrollBusiness.SendPayroll(file);
+            return Ok(response);
         }
 
         /// <summary>
@@ -84,25 +62,13 @@ namespace Backend.Payroll.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("get-status")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HealthCheckResponse))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(bool))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponse<PayrollDocument>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(BaseResponse<object>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BaseResponse<object>))]
         public async Task<IActionResult> GetPayrollStatus(GetPayrollStatusRequest request)
         {
-
-            try
-            {
-                var response = await _payrollBusiness.GetPayroll(request);
-                return Ok(response);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (Exception ex)
-            {
-                return ErrorHandling(ex);
-            }
+            var response = await _payrollBusiness.GetPayroll(request);
+            return Ok(response);
         }
 
         /// <summary>
@@ -111,34 +77,14 @@ namespace Backend.Payroll.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("get-settlements")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HealthCheckResponse))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(bool))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponse<Settlement>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(BaseResponse<object>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BaseResponse<object>))]
         public async Task<IActionResult> GetSettlements(GetSettlementsRequest request)
         {
-
-            try
-            {
-                var response = await _payrollBusiness.GetSettlements(request);
-                return Ok(response);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (Exception ex)
-            {
-                return ErrorHandling(ex);
-            }
+            var response = await _payrollBusiness.GetSettlements(request);
+            return Ok(response);
         }
 
-        private ObjectResult ErrorHandling(Exception ex)
-        {
-            string message = $"{ex.Message}";
-            // Si es excepcion de rut invalido no se deja log
-            if (ex.GetType() == typeof(InvalidRutException)) message = "El rut ingresado no es válido";
-            if (ex.GetType() == typeof(NotFoundException)) return NotFound(new DTO.Response.CodeResponse { Message = message });
-            return BadRequest(new DTO.Response.CodeResponse { Message = message });
-        }
     }
 }
